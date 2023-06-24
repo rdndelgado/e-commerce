@@ -46,7 +46,7 @@ app.post('/users', (req, res) => {
   users.push(newUser);
   
   // Sending a success response
-  res.send('Registered successfully');
+  res.send('Registered successfully.');
 });
 
 // Route to get all users (accessible to admin users only)
@@ -111,7 +111,7 @@ app.post('/products', (req, res) => {
       name,
       description,
       price,
-      isActive: req.body.isActive
+      isActive: req.body.isActive || true
     };
 
     // Adding the new product to the products array
@@ -351,6 +351,25 @@ app.get('/cart/subtotal', (req, res) => {
   } else {
     // Returning an error message if the user is unauthorized
     res.send('Unauthorized. Access denied.');
+  }
+});
+//Route to get the total of the user's cart items
+app.get('/cart/total', (req, res) => {
+  if (loggedUser) {
+    let total = 0;
+    // Calculating the total by iterating over the user's cart items
+    for (const cartItem of loggedUser.cart) {
+      const product = products.find(product => product.id === cartItem.productId);
+
+      if (product) {
+        total += product.price * cartItem.quantity;
+      }
+    }
+    // Total amount for the cart items to be purchased
+    res.send(`Total: $${total.toFixed(2)}`);
+  } else {
+    // Returning an error message if the user is unauthorized
+    res.send('Unauthorized. Access Denied.');
   }
 });
 
